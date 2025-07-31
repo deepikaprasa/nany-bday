@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>a smol effort from ur dp ;))</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+    /* Background with stars */
+    body {
+        margin: 0;
+        font-family: 'Roboto', sans-serif;
+        text-align: center;
+        overflow-x: hidden;
+        color: #fff;
+        background: #0d1b2a;
+    }
+    canvas {
+        position: fixed;
+        top: 0; left: 0;
+        z-index: -1;
+    }
+
+    h1 {
+        font-weight: 700;
+        margin-top: 40px;
+        font-size: 2rem;
+        letter-spacing: 0.5px;
+    }
+    #circuit {
+        margin-top: 60px;
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        flex-wrap: wrap;
+    }
+    .component {
+        width: 130px;
+        height: 130px;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.05);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1.1rem;
+        border: 2px solid rgba(255,255,255,0.3);
+        transition: all 0.3s ease;
+    }
+    .component:hover {
+        background: rgba(255,255,255,0.1);
+        transform: translateY(-5px);
+    }
+    .clicked {
+        border-color: #ffcc00;
+        box-shadow: 0 0 20px #ffcc00;
+    }
+    #led {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: #444;
+        margin: 40px auto 20px auto;
+        transition: all 0.4s ease;
+    }
+    .led-on {
+        background: #ffcc00;
+        box-shadow: 0 0 40px #ffcc00;
+        animation: pulse 1.5s infinite ease-in-out;
+    }
+    @keyframes pulse {
+        0% { box-shadow: 0 0 20px #ffcc00; }
+        50% { box-shadow: 0 0 40px #ffcc00; }
+        100% { box-shadow: 0 0 20px #ffcc00; }
+    }
+    #message {
+        display: none;
+        max-width: 700px;
+        margin: 40px auto;
+        padding: 20px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 10px;
+        font-size: 1.1rem;
+        line-height: 1.7;
+        text-align: left;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+    /* Golden sparks */
+    .spark {
+        position: fixed;
+        width: 6px;
+        height: 6px;
+        background: #ffcc00;
+        border-radius: 50%;
+        pointer-events: none;
+        animation: rise 2s linear forwards;
+    }
+    @keyframes rise {
+        0% { transform: translateY(0) scale(1); opacity: 1; }
+        100% { transform: translateY(-100vh) scale(0.5); opacity: 0; }
+    }
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+
+<h1>Use your ECE brain to unlock smtg huhu ✨</h1>
+
+<div id="circuit">
+    <div class="component" data-id="1">🔋<br>Battery</div>
+    <div class="component" data-id="2">〰️<br>Wire</div>
+    <div class="component" data-id="3">💡<br>LED</div>
+</div>
+
+<div id="led"></div>
+
+<div id="message">
+    <strong>Happy Birthday, Nany.</strong><br><br>
+    10 years. A thousand memories.<br>
+    I love you to the moon and back.<br>
+    You’ve been my constant, my safe place.<br>
+    I have seen us growing together at a time but from far.<br>
+    I want to see you get married and have kids 😭<br>
+    I LOVE YOUUUUUUUUUUU 😭<br>
+    Love,<br>
+    dp &lt;3
+</div>
+
+<script>
+    /* Puzzle Logic */
+    const correctOrder = ["1", "2", "3"];
+    let currentStep = 0;
+
+    const components = document.querySelectorAll(".component");
+    const led = document.getElementById("led");
+    const message = document.getElementById("message");
+
+    components.forEach(component => {
+        component.addEventListener("click", () => {
+            const id = component.getAttribute("data-id");
+            if (id === correctOrder[currentStep]) {
+                component.classList.add("clicked");
+                currentStep++;
+                if (currentStep === correctOrder.length) {
+                    led.classList.add("led-on");
+                    showMessage();
+                }
+            } else {
+                alert("Wrong step! Try again 😆");
+                resetGame();
+            }
+        });
+    });
+
+    function resetGame() {
+        components.forEach(c => c.classList.remove("clicked"));
+        led.classList.remove("led-on");
+        currentStep = 0;
+        message.style.display = "none";
+    }
+
+    function showMessage() {
+        message.style.display = "block";
+        startSparks();
+    }
+
+    /* Sparks Effect */
+    function startSparks() {
+        for (let i = 0; i < 80; i++) {
+            let spark = document.createElement("div");
+            spark.classList.add("spark");
+            spark.style.left = Math.random() * 100 + "vw";
+            spark.style.top = window.innerHeight + "px";
+            document.body.appendChild(spark);
+            setTimeout(() => { spark.remove(); }, 2000);
+        }
+    }
+
+    /* Starry Background */
+    const canvas = document.getElementById("stars");
+    const ctx = canvas.getContext("2d");
+    let stars = [];
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        stars = [];
+        for (let i = 0; i < 150; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 1.5,
+                speed: Math.random() * 0.5 + 0.2
+            });
+        }
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function drawStars() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "white";
+        stars.forEach(star => {
+            ctx.beginPath();
+            ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+            ctx.fill();
+            star.y += star.speed;
+            if (star.y > canvas.height) star.y = 0;
+        });
+        requestAnimationFrame(drawStars);
+    }
+    drawStars();
+</script>
+
+</body>
+</html>
